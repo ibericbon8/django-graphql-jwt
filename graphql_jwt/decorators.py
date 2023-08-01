@@ -2,6 +2,8 @@ from calendar import timegm
 from datetime import datetime
 from functools import wraps
 
+from django.db.models import Q
+
 from django.contrib.auth import authenticate, get_user_model
 from django.middleware.csrf import rotate_token
 from django.utils.translation import gettext as _
@@ -93,12 +95,30 @@ def token_auth(f):
         context = info.context
         context._jwt_token_auth = True
         username = kwargs.get(get_user_model().USERNAME_FIELD)
+        agent = kwargs.get('agent')
 
-        user = authenticate(
-            request=context,
-            username=username,
-            password=password,
-        )
+        if agent and agent == 'true':
+            user = get_user_model().objects.filter((Q(username__iexact=username) | Q(email__iexact=username)) & Q(agent__iexact=1)).first()
+            if user:
+                if not user.check_password(password):
+                    raise exceptions.JSONWebTokenError(
+                        _("Please enter valid credentials"),
+                    ) 
+            else:
+                raise exceptions.JSONWebTokenError(
+                    _("Please enter valid credentials"),
+                )
+        else:
+            user = get_user_model().objects.filter((Q(username__iexact=username) | Q(email__iexact=username)) & Q(agent__iexact=0)).first()
+            if user:
+                if not user.check_password(password):
+                    raise exceptions.JSONWebTokenError(
+                        _("Please enter valid credentials"),
+                    ) 
+            else:
+                raise exceptions.JSONWebTokenError(
+                    _("Please enter valid credentials"),
+                ) 
         if user is None:
             raise exceptions.JSONWebTokenError(
                 _("Please enter valid credentials"),
