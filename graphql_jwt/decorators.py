@@ -106,7 +106,7 @@ def token_auth(f):
             #         ) 
             # else:
             raise exceptions.JSONWebTokenError(
-                _("Please enter valid credentials"),
+                _("Please enter valid credentialsddd"),
             )
         else:
             user = get_user_model().objects.filter((Q(username__iexact=username) | Q(email__iexact=username)) & Q(agent__iexact=0)).first()
