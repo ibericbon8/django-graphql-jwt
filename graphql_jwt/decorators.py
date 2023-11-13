@@ -102,26 +102,26 @@ def token_auth(f):
             if user:
                 if not user.check_password(password):
                     raise exceptions.JSONWebTokenError(
-                        _("Please enter valid credentials"),
+                        _("Please enter valid credentials 1"),
                     ) 
             else:
                 raise exceptions.JSONWebTokenError(
-                    _("Please enter valid credentials"),
+                    _("Please enter valid credentials 2"),
                 )
         else:
             user = get_user_model().objects.filter((Q(username__iexact=username) | Q(email__iexact=username)) & Q(agent__iexact=0)).first()
             if user:
                 if not user.check_password(password):
                     raise exceptions.JSONWebTokenError(
-                        _("Please enter valid credentials"),
+                        _("Please enter valid credentials 3"),
                     ) 
             else:
                 raise exceptions.JSONWebTokenError(
-                    _("Please enter valid credentials"),
+                    _("Please enter valid credentials 4"),
                 ) 
         if user is None:
             raise exceptions.JSONWebTokenError(
-                _("Please enter valid credentials"),
+                _("Please enter valid credentials 5"),
             )
 
         if hasattr(context, "user"):
