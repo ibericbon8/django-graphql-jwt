@@ -98,7 +98,7 @@ def token_auth(f):
         agent = kwargs.get('agent')
 
         if agent and agent == 'true':
-            user = get_user_model().objects.filter((Q(username__iexact=username) | Q(email__iexact=username)) & Q(agent__iexact=1)).first()
+            user = get_user_model().objects.filter((Q(username__iexact=username) | Q(email__iexact=username)) & Q(agent__iexact=1) & Q(is_active__iexact=1)).first()
             if user:
                 if not user.check_password(password):
                     raise exceptions.JSONWebTokenError(
@@ -109,7 +109,7 @@ def token_auth(f):
                     _("Please enter valid credentials"),
                 )
         else:
-            user = get_user_model().objects.filter((Q(username__iexact=username) | Q(email__iexact=username)) & Q(agent__iexact=0)).first()
+            user = get_user_model().objects.filter((Q(username__iexact=username) | Q(email__iexact=username)) & Q(agent__iexact=0) & Q(is_active__iexact=1)).first()
             if user:
                 if not user.check_password(password):
                     raise exceptions.JSONWebTokenError(
